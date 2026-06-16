@@ -1,2 +1,7 @@
-# portswigger-writeups
-Write-ups dos labs do PortSwigger Web Security Academy — documentação do raciocínio e solução de cada lab resolvido.
+# PortSwigger Write-ups
+
+Documentação dos labs resolvidos no PortSwigger Web Security Academy.
+
+## Temas
+- XSS
+- SQLi
