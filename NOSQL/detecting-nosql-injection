@@ -1,8 +1,3 @@
-"Tautologia lógica" é justamente uma expressão que **é sempre verdadeira, não importa o valor das variáveis** — tipo `1=1` ou `x OU verdadeiro`. É exatamente o que seu payload faz: não importa qual seja a categoria de verdade, o `'1'=='1'` já garante que a condição toda dá `true`. Então o termo tá certo tecnicamente, mas só usa se você entender e conseguir explicar se alguém perguntar (tipo numa entrevista). Se preferir, dá pra falar a mesma coisa de um jeito mais simples tipo "condição sempre verdadeira".
-
-Vou deixar as duas opções pra você escolher, mas already formatei o resto (código em bloco, erros corrigidos):
-
-````
 LAB: Detecting NoSQL injection
 DIFICULDADE: APPRENTICE
 URL: https://portswigger.net/web-security/nosql-injection/lab-nosql-injection-detection
