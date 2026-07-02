@@ -1,0 +1,58 @@
+"Tautologia lógica" é justamente uma expressão que **é sempre verdadeira, não importa o valor das variáveis** — tipo `1=1` ou `x OU verdadeiro`. É exatamente o que seu payload faz: não importa qual seja a categoria de verdade, o `'1'=='1'` já garante que a condição toda dá `true`. Então o termo tá certo tecnicamente, mas só usa se você entender e conseguir explicar se alguém perguntar (tipo numa entrevista). Se preferir, dá pra falar a mesma coisa de um jeito mais simples tipo "condição sempre verdadeira".
+
+Vou deixar as duas opções pra você escolher, mas already formatei o resto (código em bloco, erros corrigidos):
+
+````
+LAB: Detecting NoSQL injection
+DIFICULDADE: APPRENTICE
+URL: https://portswigger.net/web-security/nosql-injection/lab-nosql-injection-detection
+Vulnerabilidade: O filtro de categorias de produtos é vulnerável a NoSQL injection
+Objetivo: Fazer com que a aplicação mostre produtos que ainda não foram lançados
+
+Como completar:
+Sabemos que a vulnerabilidade está no filtro de categoria, então a primeira coisa que fiz foi colocar uma aspa simples (') para entender se a categoria está concatenando o input com a busca nosql, o resultado obtido foi:
+
+```
+Internal Server Error
+Command failed with error 139 (JSInterpreterFailure): 'SyntaxError: unterminated string literal : functionExpressionParser@src/mongo/scripting/mozjs/mongohelpers.js:46:25 ' on server 127.0.0.1:27017. The full response is {"ok": 0.0, "errmsg": "SyntaxError: unterminated string literal :\nfunctionExpressionParser@src/mongo/scripting/mozjs/mongohelpers.js:46:25\n", "code": 139, "codeName": "JSInterpreterFailure"}
+```
+
+Podemos ver os seguintes trechos:
+JSInterpreterFailure: Pode significar que o que é passado pro servidor é interpretado como JS com o operador $where
+unterminated string literal: Quer dizer que a string não foi terminada, com isso pude deduzir que o código pudesse ser algo como:
+
+```js
+.find("this.category = '" + input da pagina + "'")
+```
+
+Então com uma simples aspa ('), o código passa a ser:
+
+```js
+.find("this.category = '''")
+```
+
+Percebe-se que sobrou uma aspa, então eu fechei a aspa e a aspa que já era do sistema ficou como interminada.
+
+PAYLOAD:
+Para quem já conhece SQL Injection, existe um método que consiste em " OR '1' = '1' ", que faz com que o resultado da Query retorne "True". Em NoSQL existe isso, porém, nesse caso específico, como identificamos que o filtro está interpretando NoSQL como código JS (com o operador $where), a variante do payload seria " '|| '1' == '1 ".
+
+Exemplo:
+
+```js
+.find("this.Category = '" + '||'1'=='1 + "'")
+```
+
+Viraria algo como:
+
+```js
+.find("this.Category = '' || '1' == '1')
+```
+
+Obs: em JS o operador ||, significa "OR"
+Seria basicamente Categoria igual a '' ou 1=1 (condição sempre verdadeira/tautologia lógica) e faria com que a query fosse válida e trouxesse o resultado de todos os produtos de category.
+
+## O que aprendi
+- Como identificar possível execução de JavaScript a partir de erros do MongoDB
+- Como transformar um input em uma condição sempre verdadeira (tautologia lógica) usando operadores JS
+- Diferença entre validação de string e execução de expressão no backend
+````
