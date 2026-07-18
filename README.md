@@ -3,6 +3,7 @@
 Documentação dos labs resolvidos no PortSwigger Web Security Academy.
 
 ## Temas
-- XSS
-- SQLi
-- NOSQL
+- xss
+- sqli
+- nosql
+- command injection
